@@ -36,4 +36,12 @@ private val _state= MutableStateFlow<ResponseState<TrendingPojo>>(ResponseState.
                 ?.collect{data->_popular.value=ResponseState.Success(data)}
         }
     }
+    private val _dicover=MutableStateFlow<ResponseState<TrendingPojo>>(ResponseState.Loading)
+    val discover=_dicover.asStateFlow()
+    fun getDiscoverData(){
+        viewModelScope.launch(Dispatchers.Main){
+            repo.getDiscover()?.catch { error->_dicover.value=ResponseState.Error(error) }
+                ?.collect{data->_dicover.value=ResponseState.Success(data)}
+        }
+    }
 }

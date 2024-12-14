@@ -25,4 +25,8 @@ class RepoMovieImp (private val movieRemoteInterface: MovieRemoteInterface):Repo
     override suspend fun getPopular(): Flow<TrendingPojo> {
         return flowOf(movieRemoteInterface.getPopular())
     }
+
+    override suspend fun getDiscover(): Flow<TrendingPojo> {
+       return flowOf(movieRemoteInterface.getDiscover())
+    }
 }

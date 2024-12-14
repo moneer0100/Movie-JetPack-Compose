@@ -6,4 +6,5 @@ interface RepoMovieInterface {
     suspend fun getTrending(): Flow<TrendingPojo>
     suspend fun getTopRating():Flow<TrendingPojo>
     suspend fun getPopular():Flow<TrendingPojo>
+    suspend fun getDiscover():Flow<TrendingPojo>
 }

@@ -40,118 +40,146 @@ import com.example.moviejetpackcompose.ui.theme.ui.theme.viewModel.HomeViewModel
 
 
 @Composable
-fun TrendingMoviesScreen(navController: NavController,viewModel: HomeViewModel = viewModel()) {
+fun TrendingMoviesScreen(navController: NavController, viewModel: HomeViewModel = viewModel()) {
     val state by viewModel.state.collectAsState()
     val topRated by viewModel.topRated.collectAsState()
     val popular by viewModel.popular.collectAsState()
+    val discover by viewModel.discover.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.getTrending()
         viewModel.getTopRated()
         viewModel.getPopularData()
+        viewModel.getDiscoverData()
     }
+
     LazyColumn(modifier = Modifier.padding(8.dp)) {
         item {
-        ///Trending
-    when (state) {
-        is ResponseState.Loading -> {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize() // This makes the Box take up all available space
-                    .wrapContentSize(Alignment.Center) // Centers the content within the Box
-            ) {
-                CircularProgressIndicator()
+            // Trending Movies
+            when (state) {
+                is ResponseState.Loading -> {
+                    LoadingState()
+                }
+                is ResponseState.Success -> {
+                    val trendingMovies = (state as ResponseState.Success).data.results
+                    SectionTitle("Trending Movies")
+                    MovieSection(movies = trendingMovies, navController = navController)
+                }
+                is ResponseState.Error -> {
+                    ErrorState((state as ResponseState.Error).message.toString())
+                }
             }
         }
-        is ResponseState.Success -> {
-            val trendingMovies = (state as ResponseState.Success).data.results
 
+        item {
+            Spacer(modifier = Modifier.height(16.dp)) // Spacing between sections
 
-                Text(
-                    text = "Trending Movies",
-                    fontSize = 24.sp
-                    , fontStyle = FontStyle.Italic,
-                    modifier = Modifier.fillMaxWidth()
-                    , color = Color.White
-                )
-                LazyRow {
-                    items(trendingMovies) { movie ->
-                        MovieItem(movie){
-                            navController.navigate("details/${movie.title}/${movie.overview}")
-
-                        }
-
-                    }
-
+            // Top Rated Movies
+            when (topRated) {
+                is ResponseState.Loading -> {
+                    LoadingState()
+                }
+                is ResponseState.Success -> {
+                    val topRatedMovies = (topRated as ResponseState.Success).data.results
+                    SectionTitle("Top Rated Movies")
+                    MovieSection(movies = topRatedMovies, navController = navController)
+                }
+                is ResponseState.Error -> {
+                    ErrorState((topRated as ResponseState.Error).message.toString())
+                }
             }
         }
-        is ResponseState.Error -> {
-            val exception = (state as ResponseState.Error)
-            Text(text = "Error: ${exception.message}")
+
+        item {
+            Spacer(modifier = Modifier.height(16.dp)) // Spacing between sections
+
+            // Popular Movies
+            when (popular) {
+                is ResponseState.Loading -> {
+                    LoadingState()
+                }
+                is ResponseState.Success -> {
+                    val popularMovies = (popular as ResponseState.Success).data.results
+                    SectionTitle("Popular Movies")
+                    MovieSection(movies = popularMovies, navController = navController)
+                }
+                is ResponseState.Error -> {
+                    ErrorState((popular as ResponseState.Error).message.toString())
+                }
+            }
+        }
+
+        item {
+            Spacer(modifier = Modifier.height(16.dp)) // Spacing between sections
+
+            // Discover Movies
+            when (discover) {
+                is ResponseState.Loading -> {
+                    LoadingState()
+                }
+                is ResponseState.Success -> {
+                    val discoverMovies = (discover as ResponseState.Success).data.results
+                    SectionTitle("Discover Movies")
+                    MovieSection(movies = discoverMovies, navController = navController)
+                }
+                is ResponseState.Error -> {
+                    ErrorState((discover as ResponseState.Error).message.toString())
+                }
+            }
         }
     }
-    Spacer(modifier = Modifier.height(16.dp))
-        ///TopRated
-        when(topRated){
-            is ResponseState.Loading->{
-
-            }
-            is ResponseState.Success->{
-                val topRated=(topRated as ResponseState.Success).data.results
-
-                Text(text = "Top Rated Movies"
-                    , modifier = Modifier.fillMaxWidth()
-                    , fontSize = 24.sp
-                    , fontStyle = FontStyle.Italic
-                    , color = Color.White)
-                LazyRow {
-                    items(topRated){movie->
-                        MovieItem(movie) {
-                            navController.navigate("details/${movie.title}/${movie.overview}")
-                        }
-                    }
-                }
-            }
-            is ResponseState.Error->{
-                val exception = (topRated as ResponseState.Error)
-                Text(text = "Error: ${exception.message}")
-            }
-        }
-
-            Spacer(modifier = Modifier.height(16.dp))
-            //popular
-            when(popular){
-
-                is ResponseState.Loading->{}
-                is ResponseState.Success->{
-                    val populaer =(popular as ResponseState.Success).data.results
-                    Text(text = "Popular Movies", modifier = Modifier.fillMaxWidth(),
-                        fontStyle=FontStyle.Italic
-                        , fontSize = 25.sp,
-                        color = Color.White)
-                    LazyRow {
-                        items(populaer){movie->
-                            MovieItem(movie) {
-                                navController.navigate("details/${movie.title}/${movie.overview}")
-
-                            }
-                        }
-                    }
-                }
-                is ResponseState.Error->{
-                    val exception = (topRated as ResponseState.Error)
-                    Text(text = "Error: ${exception.message}")
-                }
-            }
-
-}
-
-}
-
 }
 
 @Composable
-fun MovieItem(movie: Result,onClick:()->Unit) {
+fun LoadingState() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .wrapContentSize(Alignment.Center)
+    ) {
+        CircularProgressIndicator()
+    }
+}
+
+@Composable
+fun ErrorState(message: String?) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .wrapContentSize(Alignment.Center)
+            .padding(16.dp)
+    ) {
+        Text(text = "Error: $message", color = Color.Red)
+    }
+}
+
+@Composable
+fun SectionTitle(title: String) {
+    Text(
+        text = title,
+        fontSize = 24.sp,
+        fontStyle = FontStyle.Italic,
+        modifier = Modifier.fillMaxWidth(),
+        color = Color.White
+    )
+}
+
+@Composable
+fun MovieSection(movies: List<Result>, navController: NavController) {
+    LazyRow(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        items(movies) { movie ->
+            MovieItem(movie = movie) {
+                navController.navigate("details/${movie.title}/${movie.overview}")
+            }
+        }
+    }
+}
+
+@Composable
+fun MovieItem(movie: Result, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .padding(2.dp)
