@@ -43,10 +43,12 @@ import com.example.moviejetpackcompose.ui.theme.ui.theme.viewModel.HomeViewModel
 fun TrendingMoviesScreen(navController: NavController,viewModel: HomeViewModel = viewModel()) {
     val state by viewModel.state.collectAsState()
     val topRated by viewModel.topRated.collectAsState()
+    val popular by viewModel.popular.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.getTrending()
         viewModel.getTopRated()
+        viewModel.getPopularData()
     }
     LazyColumn(modifier = Modifier.padding(8.dp)) {
         item {
@@ -117,10 +119,31 @@ fun TrendingMoviesScreen(navController: NavController,viewModel: HomeViewModel =
         }
 
             Spacer(modifier = Modifier.height(16.dp))
-            Text(text = "Popular Movies", modifier = Modifier.fillMaxWidth(),
-                fontStyle=FontStyle.Italic
-                , fontSize = 25.sp,
-                color = Color.White)
+            //popular
+            when(popular){
+
+                is ResponseState.Loading->{}
+                is ResponseState.Success->{
+                    val populaer =(popular as ResponseState.Success).data.results
+                    Text(text = "Popular Movies", modifier = Modifier.fillMaxWidth(),
+                        fontStyle=FontStyle.Italic
+                        , fontSize = 25.sp,
+                        color = Color.White)
+                    LazyRow {
+                        items(populaer){movie->
+                            MovieItem(movie) {
+                                navController.navigate("details/${movie.title}/${movie.overview}")
+
+                            }
+                        }
+                    }
+                }
+                is ResponseState.Error->{
+                    val exception = (topRated as ResponseState.Error)
+                    Text(text = "Error: ${exception.message}")
+                }
+            }
+
 }
 
 }

@@ -22,4 +22,8 @@ class MovieRemotImp private constructor(private val apiService: ApiService) : Mo
     override suspend fun getTopRated(): TrendingPojo {
         return apiService.getTopRated()
     }
+
+    override suspend fun getPopular(): TrendingPojo {
+        return apiService.getPopularMovies()
+    }
 }

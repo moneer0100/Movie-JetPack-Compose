@@ -28,4 +28,12 @@ private val _state= MutableStateFlow<ResponseState<TrendingPojo>>(ResponseState.
                 ?.collect{data->_topRated.value=ResponseState.Success(data)}
         }
     }
+    private val _popular=MutableStateFlow<ResponseState<TrendingPojo>>(ResponseState.Loading)
+    val popular=_popular.asStateFlow()
+    fun getPopularData(){
+        viewModelScope.launch(Dispatchers.IO){
+            repo.getPopular()?.catch {error->_popular.value=ResponseState.Error(error)  }
+                ?.collect{data->_popular.value=ResponseState.Success(data)}
+        }
+    }
 }
