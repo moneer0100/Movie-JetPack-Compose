@@ -51,9 +51,10 @@ fun MovieNavigation(viewModel: HomeViewModel) {
                 val jsonResult = backStackEntry.arguments?.getString("result")
                 if (jsonResult != null) {
                     val movieResult = Gson().fromJson(jsonResult, Result::class.java)
+                    val movieFav=Gson().fromJson(jsonResult,MovieDataFav::class.java)
                     Log.d("moneer", "MovieNavigation: $movieResult")
-                    if (movieResult != null) {
-                        DetailsMovies(movieResult = movieResult, viewModel = viewModel)
+                    if (movieResult != null&&movieFav !=null) {
+                        DetailsMovies(movieResult = movieResult, movieDataFav=movieFav, viewModel = viewModel)
                     }
                 } else {
                     Log.e("MovieNavigation", "Error: No movie result found")

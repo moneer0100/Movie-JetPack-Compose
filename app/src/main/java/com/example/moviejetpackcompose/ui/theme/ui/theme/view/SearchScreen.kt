@@ -54,7 +54,7 @@ fun SearchScreen(navController: NavController, viewModel: HomeViewModel = viewMo
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Search TextField with clear focus, hint and search icon
+
         OutlinedTextField(
             value = query,
             onValueChange = {
