@@ -1,6 +1,6 @@
-package com.example.moviejetpackcompose.model
+package com.example.moviejetpackcompose.model.netWork
 
-import com.example.moviejetpackcompose.pojo.TrendingPojo
+import com.example.moviejetpackcompose.model.pojo.TrendingPojo
 
 class MovieRemotImp private constructor(private val apiService: ApiService) : MovieRemoteInterface {
 
@@ -29,5 +29,9 @@ class MovieRemotImp private constructor(private val apiService: ApiService) : Mo
 
     override suspend fun getDiscover(): TrendingPojo {
         return apiService.getDiscoverMovies()
+    }
+
+    override suspend fun getSearch(search:String): TrendingPojo {
+        return apiService.getSearch(search=search)
     }
 }

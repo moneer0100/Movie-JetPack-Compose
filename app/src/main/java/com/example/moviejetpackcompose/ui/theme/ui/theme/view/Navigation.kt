@@ -21,16 +21,19 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.moviejetpackcompose.model.pojo.MovieDataFav
+import com.example.moviejetpackcompose.model.pojo.Result
 
 import com.example.moviejetpackcompose.ui.theme.ui.theme.viewModel.HomeViewModel
 
 import com.example.moviejetpackcompose.ui.theme.view.TrendingMoviesScreen
+import com.google.gson.Gson
 
 @Composable
 fun MovieNavigation(viewModel: HomeViewModel) {
     val navControl = rememberNavController()
 
-    // استخدم Scaffold لتضمين BottomNavigationBar
+
     androidx.compose.material3.Scaffold(
         bottomBar = {
             BottomNavigationBar(navController = navControl)
@@ -44,16 +47,24 @@ fun MovieNavigation(viewModel: HomeViewModel) {
             composable("trending") {
                 TrendingMoviesScreen(navController = navControl, viewModel = viewModel)
             }
-            composable("details/{movieTitle}/{movieDetails}") { backStackEntry ->
-                val movieTitle = backStackEntry.arguments?.getString("movieTitle")
-                val movieDetails = backStackEntry.arguments?.getString("movieDetails")
-                DetailsMovies(movieTitle, movieDetails)
+            composable("details/{result}") { backStackEntry ->
+                val jsonResult = backStackEntry.arguments?.getString("result")
+                if (jsonResult != null) {
+                    val movieResult = Gson().fromJson(jsonResult, Result::class.java)
+                    Log.d("moneer", "MovieNavigation: $movieResult")
+                    if (movieResult != null) {
+                        DetailsMovies(movieResult = movieResult, viewModel = viewModel)
+                    }
+                } else {
+                    Log.e("MovieNavigation", "Error: No movie result found")
+                }
+
             }
             composable("search") {
-                SearchScreen()
+                SearchScreen(navController = navControl, viewModel = viewModel)
             }
             composable("fav") {
-                FavouriteScreen()
+                FavouriteScreen(navController=navControl,viewModel=viewModel)
             }
 
         }
@@ -63,7 +74,7 @@ fun MovieNavigation(viewModel: HomeViewModel) {
 fun BottomNavigationBar(navController: NavController, modifier: Modifier = Modifier) {
     androidx.compose.material3.BottomAppBar(
         modifier = modifier.height(56.dp),
-        containerColor = Color.Black // لون الخلفية
+        containerColor = Color.Black
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -76,7 +87,7 @@ fun BottomNavigationBar(navController: NavController, modifier: Modifier = Modif
                 tint = Color.White,
                 modifier = Modifier.clickable {
                     if (navController.currentBackStackEntry?.destination?.route != "trending") {
-                        navController.popBackStack("trending", false) // إزالة أي شاشات فوق "trending"
+                        navController.popBackStack("trending", false)
                         navController.navigate("trending") {
 
                             popUpTo("trending") { inclusive = true }
@@ -99,7 +110,7 @@ fun BottomNavigationBar(navController: NavController, modifier: Modifier = Modif
                 contentDescription = "Favorite",
                 tint = Color.White,
                 modifier = Modifier.clickable {
-                    // تنقل إلى شاشة المفضلة
+
                     navController.navigate("fav")
                 }
             )

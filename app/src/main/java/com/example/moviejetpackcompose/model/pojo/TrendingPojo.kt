@@ -1,6 +1,8 @@
-package com.example.moviejetpackcompose.pojo
+package com.example.moviejetpackcompose.model.pojo
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.parcelize.Parcelize
 import java.io.Serializable
 
 data class TrendingPojo(
@@ -11,7 +13,7 @@ data class TrendingPojo(
 )
 
 data class Result(
-   val id: Long,
+    val id: Long,
     val backdropPath: String? = null,
     var title: String? = null,
     val originalTitle: String? = null,

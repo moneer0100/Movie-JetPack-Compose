@@ -1,6 +1,6 @@
-package com.example.moviejetpackcompose.model
+package com.example.moviejetpackcompose.model.netWork
 
-import com.example.moviejetpackcompose.pojo.TrendingPojo
+import com.example.moviejetpackcompose.model.pojo.TrendingPojo
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -17,9 +17,13 @@ interface ApiService {
     @GET("movie/popular")
     suspend fun getPopularMovies(
         @Query("api_key")  api_key:String="98cab6930c64eb0b9e6ba2885bf7d48a"
-    ):TrendingPojo
+    ): TrendingPojo
     @GET("discover/movie")
     suspend fun getDiscoverMovies(
         @Query("api_key")  api_key:String="98cab6930c64eb0b9e6ba2885bf7d48a"
-    ):TrendingPojo
+    ): TrendingPojo
+    @GET("search/movie")
+    suspend fun getSearch(@Query("api_key") api_key:String="98cab6930c64eb0b9e6ba2885bf7d48a"
+                          ,@Query("query") search:String): TrendingPojo
+
 }

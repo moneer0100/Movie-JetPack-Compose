@@ -1,4 +1,4 @@
-package com.example.moviejetpackcompose.model
+package com.example.moviejetpackcompose.model.netWork
 
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

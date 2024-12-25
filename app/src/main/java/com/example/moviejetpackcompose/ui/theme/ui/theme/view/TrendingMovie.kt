@@ -1,5 +1,7 @@
 package com.example.moviejetpackcompose.ui.theme.view
 
+import android.net.Uri.encode
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,9 +17,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Search
+
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
@@ -34,11 +34,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
-import com.example.moviejetpackcompose.model.ResponseState
-import com.example.moviejetpackcompose.pojo.Result
+import com.example.moviejetpackcompose.model.netWork.ResponseState
+import com.example.moviejetpackcompose.model.pojo.Result
 import com.example.moviejetpackcompose.ui.theme.ui.theme.viewModel.HomeViewModel
+import com.google.gson.Gson
+import java.net.URLEncoder
 
 
 @Composable
@@ -53,6 +54,7 @@ fun TrendingMoviesScreen(navController: NavController, viewModel: HomeViewModel 
         viewModel.getTopRated()
         viewModel.getPopularData()
         viewModel.getDiscoverData()
+
     }
     Box(modifier = Modifier.fillMaxSize()) {
     LazyColumn(modifier = Modifier.padding(8.dp)) {
@@ -65,7 +67,7 @@ fun TrendingMoviesScreen(navController: NavController, viewModel: HomeViewModel 
                 is ResponseState.Success -> {
                     val trendingMovies = (state as ResponseState.Success).data.results
                     SectionTitle("Trending Movies")
-                    MovieSection(movies = trendingMovies, navController = navController)
+                    MovieSection(movie = trendingMovies, navController = navController)
                 }
                 is ResponseState.Error -> {
                     ErrorState((state as ResponseState.Error).message.toString())
@@ -84,7 +86,7 @@ fun TrendingMoviesScreen(navController: NavController, viewModel: HomeViewModel 
                 is ResponseState.Success -> {
                     val topRatedMovies = (topRated as ResponseState.Success).data.results
                     SectionTitle("Top Rated Movies")
-                    MovieSection(movies = topRatedMovies, navController = navController)
+                    MovieSection(movie = topRatedMovies, navController = navController)
                 }
                 is ResponseState.Error -> {
                     ErrorState((topRated as ResponseState.Error).message.toString())
@@ -103,7 +105,7 @@ fun TrendingMoviesScreen(navController: NavController, viewModel: HomeViewModel 
                 is ResponseState.Success -> {
                     val popularMovies = (popular as ResponseState.Success).data.results
                     SectionTitle("Popular Movies")
-                    MovieSection(movies = popularMovies, navController = navController)
+                    MovieSection(movie = popularMovies, navController = navController)
                 }
                 is ResponseState.Error -> {
                     ErrorState((popular as ResponseState.Error).message.toString())
@@ -122,7 +124,7 @@ fun TrendingMoviesScreen(navController: NavController, viewModel: HomeViewModel 
                 is ResponseState.Success -> {
                     val discoverMovies = (discover as ResponseState.Success).data.results
                     SectionTitle("Discover Movies")
-                    MovieSection(movies = discoverMovies, navController = navController)
+                    MovieSection(movie = discoverMovies, navController = navController)
                 }
                 is ResponseState.Error -> {
                     ErrorState((discover as ResponseState.Error).message.toString())
@@ -163,33 +165,48 @@ fun SectionTitle(title: String) {
         fontSize = 24.sp,
         fontStyle = FontStyle.Italic,
         modifier = Modifier.fillMaxWidth(),
-        color = Color.White
+        color = Color.Black
     )
 }
 
 @Composable
-fun MovieSection(movies: List<Result>, navController: NavController) {
+fun MovieSection(movie: List<Result>, navController: NavController) {
     LazyRow(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        items(movies) { movie ->
+        items(movie) { movie ->
             MovieItem(movie = movie) {
-                navController.navigate("details/${movie.title}/${movie.overview}")
+                val jsonResult = encode(Gson().toJson(movie))
+                navController.navigate("details/${jsonResult}")
+
             }
         }
     }
 }
+@Composable
+fun MovieSectionSearch(movie:List<Result>, navController: NavController){
+    LazyColumn(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.Center) {
+        items(movie){movie->
+            MovieItem(movie = movie) {
+                val jsonResult = encode(Gson().toJson(movie))
+                navController.navigate("details/$jsonResult")
 
+
+            }
+        }
+
+    }
+}
 
 
 @Composable
-fun MovieItem(movie: Result, onClick: () -> Unit) {
+fun MovieItem(movie: Result, onClick: (Result) -> Unit) {
     Card(
         modifier = Modifier
             .padding(2.dp)
             .size(200.dp, 300.dp)
-            .clickable { onClick() }
+            .clickable { onClick(movie) }
     ) {
         Row(
             modifier = Modifier

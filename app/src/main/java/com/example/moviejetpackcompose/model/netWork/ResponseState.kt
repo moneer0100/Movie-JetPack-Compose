@@ -1,4 +1,4 @@
-package com.example.moviejetpackcompose.model
+package com.example.moviejetpackcompose.model.netWork
 
 sealed class ResponseState <out T>{
     data class Success<out T>(val data: T) : ResponseState<T>()
