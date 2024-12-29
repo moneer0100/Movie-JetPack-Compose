@@ -1,19 +1,11 @@
 package com.example.moviejetpackcompose.model.netWork
 
 import com.example.moviejetpackcompose.model.pojo.TrendingPojo
+import javax.inject.Inject
 
-class MovieRemotImp private constructor(private val apiService: ApiService) : MovieRemoteInterface {
+class MovieRemotImp @Inject constructor(private val apiService: ApiService) : MovieRemoteInterface {
 
-    companion object {
-        @Volatile
-        private var instance: MovieRemotImp? = null
 
-        fun getInstance(apiService: ApiService): MovieRemotImp {
-            return instance ?: synchronized(this) {
-                instance ?: MovieRemotImp(apiService).also { instance = it }
-            }
-        }
-    }
 
     override suspend fun getTrending(): TrendingPojo {
         return apiService.getTrending()

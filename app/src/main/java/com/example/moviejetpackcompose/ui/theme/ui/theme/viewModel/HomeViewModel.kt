@@ -9,14 +9,16 @@ import com.example.moviejetpackcompose.model.netWork.ResponseState
 import com.example.moviejetpackcompose.model.pojo.MovieDataFav
 import com.example.moviejetpackcompose.model.pojo.RepoMovieImp
 import com.example.moviejetpackcompose.model.pojo.TrendingPojo
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
-import kotlin.math.log
+import javax.inject.Inject
 
-class HomeViewModel(private val repo: RepoMovieImp):ViewModel() {
+@HiltViewModel
+class HomeViewModel@Inject constructor( private val repo: RepoMovieImp):ViewModel() {
 private val _state= MutableStateFlow<ResponseState<TrendingPojo>>(ResponseState.Loading)
     val state=_state.asStateFlow()
     fun getTrending(){

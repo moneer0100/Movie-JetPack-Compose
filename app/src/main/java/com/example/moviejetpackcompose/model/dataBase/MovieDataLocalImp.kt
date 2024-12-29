@@ -1,19 +1,11 @@
 package com.example.moviejetpackcompose.model.dataBase
 
 import com.example.moviejetpackcompose.model.pojo.MovieDataFav
+import dagger.Module
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
-class MovieDataLocalImp(private val dao:Dao):MovieDataLocalInterface {
-    companion object {
-        @Volatile
-        var instance: MovieDataLocalImp? = null
-        fun getInstance(dao: Dao): MovieDataLocalImp {
-            return instance?: synchronized(this){
-                instance?: MovieDataLocalImp(dao)
-                    .also { instance = it }
-            }
-        }
-    }
+class MovieDataLocalImp @Inject constructor(private val dao:Dao):MovieDataLocalInterface {
 
     override fun getAllData(): Flow<List<MovieDataFav>> {
         return dao.getAllData()

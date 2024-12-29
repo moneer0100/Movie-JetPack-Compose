@@ -1,21 +1,23 @@
 package com.example.moviejetpackcompose.model.pojo
 
+import com.example.moviejetpackcompose.model.dataBase.Dao
+import com.example.moviejetpackcompose.model.dataBase.MovieDataLocalImp
 import com.example.moviejetpackcompose.model.dataBase.MovieDataLocalInterface
+import com.example.moviejetpackcompose.model.netWork.ApiService
+import com.example.moviejetpackcompose.model.netWork.MovieRemotImp
 import com.example.moviejetpackcompose.model.netWork.MovieRemoteInterface
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class RepoMovieImp (private val movieRemoteInterface: MovieRemoteInterface,
+@Singleton
+class RepoMovieImp @Inject constructor ( private val movieRemoteInterface: MovieRemoteInterface,
     private val movieDataLocalInterface: MovieDataLocalInterface): RepoMovieInterface {
-    companion object {
-        private var instance: RepoMovieImp? = null
-        fun getInstance(movieRemoteInterface: MovieRemoteInterface,
-                        movieDataLocalInterface: MovieDataLocalInterface): RepoMovieImp {
-            return instance ?: synchronized(this) {
-                instance ?: RepoMovieImp(movieRemoteInterface,movieDataLocalInterface)
-                    .also { instance = it }
-            }
-        }}
 
     override suspend fun getTrending(): Flow<TrendingPojo> {
         return flowOf(movieRemoteInterface.getTrending())
